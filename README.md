@@ -1,58 +1,72 @@
 # Analyzing the Correlation Between Anime Genres and Viewer Ratings
 
 ## Overview
-This project aims to explore and analyze the relationship between anime genres and their corresponding viewer ratings. By investigating this relationship, the study seeks to identify whether certain genres consistently achieve higher ratings or attract more viewers.
+This project explores how anime genres relate to viewer ratings and popularity. It combines **exploratory data analysis**, **statistical testing**, **feature engineering**, and **machine learning** to:
+- Reveal patterns in ratings across genres.
+- Measure the strength of genre effects on ratings.
+- Build predictive models for anime ratings.
 
 ## Motivation
-Understanding viewer preferences can significantly impact content creators, streaming services, and anime studios. This analysis provides valuable insights into trends in anime popularity, potentially guiding decisions related to anime production, licensing, and recommendations to viewers.
+Understanding which genres resonate most can help:
+- **Studios & Producers** tailor content to audience preferences.
+- **Streaming Platforms** optimize recommendations.
+- **Marketers** target key fan demographics.
 
 ## Project Objectives
-- Identify patterns in viewer ratings across various anime genres.
-- Analyze if specific genres consistently outperform others in terms of ratings and popularity.
-- Provide insights that could aid content recommendation systems or anime marketing strategies.
+1. **Statistical Analysis**: Test whether average ratings differ significantly between genres (ANOVA + Tukey HSD + effect size).
+2. **Feature Engineering**: Derive new predictors (e.g., `genre_count`, `log_members`) to improve model performance.
+3. **Predictive Modeling**: Compare regression and classification models (Linear, Ridge, Lasso, Random Forest, XGBoost) to predict ratings or classify high/low ratings.
+4. **Data Enrichment**: Demonstrate how to append fresh anime data via API to keep the analysis up to date.
 
 ## Hypotheses
-- **First Hypothesis:** Certain anime genres consistently have higher viewer ratings.
-- **Second Hypothesis:** Viewer ratings positively correlate with the popularity (number of members) of anime titles.
+- **H₀**: Mean ratings are equal across all genres.  
+- **H₁**: At least one genre’s mean rating differs.  
+- Ratings positively correlate with the number of members (popularity).
 
 ## Methodology
 
-### Data Collection
-The dataset includes:
-- Anime ID
-- Name of the anime
-- Genre(s)
-- Type (TV, Movie, OVA, etc.)
-- Number of episodes
-- Viewer rating
-- Number of members (popularity metric)
+### 1. Data Collection
+- Source: `data/anime.csv` (anime ID, name, genres, type, episodes, rating, members).  
+- Example enrichment: Jikan API scripts to fetch top-n popular anime and their metrics.
 
-### Data Processing
-- Data cleaning to handle missing or inconsistent values.
-- Categorization and encoding of genres for effective analysis.
-- Merging genre information with ratings and popularity metrics.
+### 2. Data Processing & Cleaning
+- **Missing values**: Drop or impute rows missing critical fields (`genre`, `rating`, `members`).  
+- **Data types**: Ensure genres are strings, convert numeric fields.
 
-### Data Analysis
-- **Exploratory Data Analysis (EDA):** Visualization of ratings distributions across genres.
-- **Statistical Analysis:**
-  - Correlation analysis between genres, ratings, and popularity metrics.
-  - Hypothesis testing (e.g., ANOVA, Chi-square tests).
-- **Machine Learning Techniques:** Classification or regression models (Random Forest, Linear Regression, Decision Tree) to predict anime ratings based on genre and popularity metrics.
+### 3. Feature Engineering
+- **`genre_count`**: Number of genres per title.  
+- **`log_members`**: Log-transform of membership counts to reduce skew.  
+- **One-hot / Multi-hot encoding**: Turn comma-separated genres into binary columns.
 
-## Findings
-(This section will be updated upon completion of data analysis.)
+### 4. Exploratory Data Analysis (EDA)
+- **Distributions**: Histograms of raw vs. transformed features (`members`, `log_members`).  
+- **Correlation matrix**: Numeric feature correlations.  
+- **Genre boxplots**: Rating distributions for top-5 frequent genres.
+
+### 5. Statistical Testing
+- **ANOVA**: Compare mean ratings by genre.  
+- **Effect size (η²)**: Quantify how much variance genre explains.  
+- **Tukey HSD**: Identify which genre pairs differ significantly.
+
+### 6. Machine Learning
+- **Regression**: Linear, Ridge, Lasso, Random Forest, XGBoost (compare MSE, MAE, R², CV-R²).  
+- **Classification**: Binary classification of high (≥7.0) vs. low ratings (Random Forest, ROC/AUC).  
+- **Feature importances**: XGBoost top-10 predictors.
+
+## Key Findings
+- **Statistical Test**: ANOVA yielded p < 0.01, η² ≈ 0.03 (small effect), with post-hoc differences between specific genres.  
+- **Best Model**: XGBoost achieved **R² ≈ 0.54** and **MAE ≈ 0.51**, outperforming linear and tree-based baselines.  
+- **Top Predictors**: `log_members`, `genre_count`, and specific genres (e.g., Drama, Action) drove rating predictions.
 
 ## Limitations
-- Ratings might be subjective and influenced by viewer bias.
-- Genre definitions can overlap, complicating analysis.
+- **Subjectivity**: Ratings reflect viewer bias.  
+- **Genre overlap**: Many titles span multiple genres.  
+- **Feature scope**: Excludes studio, release year, review sentiment.
 
 ## Future Work
-- Extend the analysis to include additional variables such as production studio, year of release, and episode length.
-- Explore temporal trends to understand changes in viewer preferences over time.
-- Utilize user reviews for sentiment analysis to enhance rating predictions.
+- Incorporate **production studio** and **release year** data.  
+- Perform **sentiment analysis** on user reviews.  
+- Extend to **time-series** analysis of rating trends.  
+- Automate data enrichment via scheduled API pulls.
 
-## Repository Structure
-- `data/`: Dataset used for analysis.
-- Python scripts (`.ipynb`): Include data preprocessing, exploratory analysis, and machine learning models.
-- `requirements.txt`: Project dependencies.
-- `README.md`: Instructions for reproducing the analysis.
+
